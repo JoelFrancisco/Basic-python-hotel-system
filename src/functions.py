@@ -1,6 +1,4 @@
-from math import ceil
 import os
-from logging import exception
 
 
 def cls():
@@ -22,7 +20,7 @@ def print_dados_hospede(hospede):
     #       (hospede['id'], hospede['nome'], hospede['cpf'], hospede['qtdePessoas'], hospede['tipoQuarto'], hospede['numDias'], hospede['valor'], hospede['status']))
 
 
-def verificaValorDoQuarto(tipoQuarto, qtdePessoas, dias):
+def verifica_valor_do_quarto(tipoQuarto, qtdePessoas, dias):
     """
     Calculando valores
     """
@@ -46,11 +44,3 @@ def procurar_reserva_pelo_cpf(lista_hospedes, cpf):
 def listar_reservas_por_status(lista_hospedes, status):
     reservas = list(filter(lambda x: x['status'] == status, lista_hospedes))
     return reservas
-
-
-
-    #   reserva_pelo_hospede = []
-    #     for hospede in lista_hospedes:
-    #     if hospede['status'] == "R" and hospede['cpf'] == cpf:
-    #        reserva_pelo_hospede.append(hospede)
-    #        return reserva_pelo_hospede

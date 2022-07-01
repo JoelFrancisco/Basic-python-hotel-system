@@ -22,6 +22,7 @@ def add_novo_hospede():
 
         if name == None or name == "":
             print("Nome é obrigatório")
+            # sleep para dar tempo do usuário ler a mensagem de erro
             sleep(1)
             continue
 
@@ -70,7 +71,7 @@ def add_novo_hospede():
             sleep(1)
             continue
 
-        valor = functions.verificaValorDoQuarto(tipoQuarto, qtdePessoas, numDias)
+        valor = functions.verifica_valor_do_quarto(tipoQuarto, qtdePessoas, numDias)
 
         hospedes_data.append(
             {
@@ -188,6 +189,57 @@ def realizar_check_out():
 
         value = int(input("\n 1 - Realizar outra pesquisa\n 0 - Voltar\n>> "))
 
+def consegue_dados_alterar():
+    valor = 1
+    while valor == 1:
+        qtdePessoas = int(input("Informe quantas pessoas*: "))
+
+        if qtdePessoas == None:
+            print("Quantidade de pessoas é obrigatório")
+            sleep(1)
+            continue
+
+        if qtdePessoas <= 0:
+            print("Quantidade de pessoas deve ser maior que 0")
+            sleep(1)
+            continue
+
+        tipoQuarto = input(
+            "Informe o quarto desejado(S – Standard, D – Deluxe, P – Premium)*: "
+        )
+
+        if tipoQuarto not in ("S", "D", "P"):
+            print("Tipo quarto inválido")
+            sleep(1)
+            continue
+
+        numDias = int(input("Quantos dias de estadia: "))
+
+        if numDias == None:
+            print("quantidade de dias é obrigatório")
+            sleep(1)
+            continue
+
+        if numDias <= 0:
+            print("Quantidade de dias deve ser maior que 0")
+            sleep(1)
+            continue
+
+        status = input("status: ")
+
+        if status == None or status == "":
+            print("Status não pode ser nulo")
+            sleep(1)
+            continue
+
+        valor = 0
+
+    return {
+        "qtdePessoas": qtdePessoas,
+        "tipoQuarto": tipoQuarto,
+        "numDias": numDias,
+        "status": status
+    }
 
 def alterar_reserva():
     hospedes_json = open("./hospedes.data.json")
@@ -205,30 +257,26 @@ def alterar_reserva():
             reservas_hospede = functions.procurar_reserva_pelo_cpf(hospedes_data, cpf)
 
             id_reserva_para_alterar = 0
+            # Verifica se possui mais de uma reserva para permitir escolher via id
             if len(reservas_hospede) > 1:
                 for reserva_ativa in reservas_hospede:
                     functions.print_dados_hospede(reserva_ativa)
 
                 id_reserva_para_alterar = int(input("Digite o id da reserva: "))
             else:
+            # Caso só tenha uma reserva não pede o id da reserva ao usuário
                 id_reserva_para_alterar = int(reservas_hospede[0]["id"])
 
             print()
-            qtdePessoas = int(input("Informe quantas pessoas*: "))
-            tipoQuarto = input(
-                "Informe o quarto desejado(S – Standard, D – Deluxe, P – Premium)*: "
-            )
-            numDias = int(input("Quantos dias de estadia: "))
-            status = input("status: ")
-            valor = functions.verificaValorDoQuarto(tipoQuarto, qtdePessoas, numDias)
+            dados = consegue_dados_alterar()
             print()
 
             for hospede in hospedes_data:
                 if int(hospede["id"]) == id_reserva_para_alterar:
-                    hospede["status"] = status
-                    hospede["tipoQuarto"] = tipoQuarto
-                    hospede["numDias"] = numDias
-                    hospede["valor"] = valor
+                    hospede["status"] = dados["status"]
+                    hospede["tipoQuarto"] = dados["tipoQuarto"]
+                    hospede["numDias"] = dados["numDias"]
+                    hospede["valor"] = dados["valor"]
 
             json.dump(
                 hospedes_data, open("./hospedes.data.json", "w", encoding="utf-8")
