@@ -14,10 +14,6 @@ def print_dados_hospede(hospede):
     """
     print(f"""id: {hospede['id']}\tnome: {hospede['nome']}\tcpf: {hospede['cpf']}\tTipo do quarto: {hospede['qtdePessoas']}\tTipo quarto: {hospede['tipoQuarto']}
     \tQtde. dias: {hospede['numDias']}\tValor: {hospede['valor']}\tStatus: {hospede['status']}""")
-   
-   
-    # print('id: %s\tnome: %s\tcpf: %s\tQtde. pessoas: %s\tTipo do quarto: %s\tDias: %s\tValor: %s\tStatus: %s' %
-    #       (hospede['id'], hospede['nome'], hospede['cpf'], hospede['qtdePessoas'], hospede['tipoQuarto'], hospede['numDias'], hospede['valor'], hospede['status']))
 
 
 def verifica_valor_do_quarto(tipoQuarto, qtdePessoas, dias):

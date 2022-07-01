@@ -105,13 +105,13 @@ def realizar_check_in():
 
     value = int(input("Escolha uma opção: "))
     while value == 1:
-        cpf = int(input("Informe o CPF para a busca: "))
+        cpf = input("Informe o CPF para a busca: ")
 
         try:
             reservas_hospede = functions.procurar_reserva_pelo_cpf(hospedes_data, cpf)
 
-            if len(reservas_hospede) == 0:
-                print("Valor do cpf inválido")
+            #if len(reservas_hospede) == 0:
+            #    print("Valor do cpf inválido")
 
             reservas_realizadas = tuple(
                 filter(lambda x: x["status"] == "R", reservas_hospede)
@@ -154,7 +154,7 @@ def realizar_check_out():
 
     value = int(input("Escolha uma opção: "))
     while value == 1:
-        cpf = int(input("Informe o CPF para a busca: "))
+        cpf = input("Informe o CPF para a busca: ")
 
         try:
             reservas_hospede = functions.procurar_reserva_pelo_cpf(hospedes_data, cpf)
@@ -164,6 +164,7 @@ def realizar_check_out():
             )
             id_reserva_para_realizar_check_out = 0
 
+            # Se tiver mais de uma reserva o usuario deve passar o id da reserva
             if len(reservas_ativas) > 1:
                 for reserva_ativa in reservas_ativas:
                     functions.print_dados_hospede(reserva_ativa)
@@ -190,6 +191,7 @@ def realizar_check_out():
         value = int(input("\n 1 - Realizar outra pesquisa\n 0 - Voltar\n>> "))
 
 def consegue_dados_alterar():
+    # Consegue os inputs e valida possibilidade de alteração
     valor = 1
     while valor == 1:
         qtdePessoas = int(input("Informe quantas pessoas*: "))
@@ -238,7 +240,8 @@ def consegue_dados_alterar():
         "qtdePessoas": qtdePessoas,
         "tipoQuarto": tipoQuarto,
         "numDias": numDias,
-        "status": status
+        "status": status,
+        "valor":  functions.verifica_valor_do_quarto(tipoQuarto, qtdePessoas, numDias)
     }
 
 def alterar_reserva():
@@ -251,10 +254,14 @@ def alterar_reserva():
 
     value = int(input("Escolha uma opção: "))
     while value == 1:
-        cpf = int(input("Informe o CPF para a busca: "))
+        cpf = input("Informe o CPF para a busca: ")
 
         try:
             reservas_hospede = functions.procurar_reserva_pelo_cpf(hospedes_data, cpf)
+
+            if len(reservas_hospede) == 0:
+                print("Nenhuma reserva encontrada nesse CPF")
+                continue
 
             id_reserva_para_alterar = 0
             # Verifica se possui mais de uma reserva para permitir escolher via id
@@ -267,9 +274,7 @@ def alterar_reserva():
             # Caso só tenha uma reserva não pede o id da reserva ao usuário
                 id_reserva_para_alterar = int(reservas_hospede[0]["id"])
 
-            print()
             dados = consegue_dados_alterar()
-            print()
 
             for hospede in hospedes_data:
                 if int(hospede["id"]) == id_reserva_para_alterar:
@@ -277,6 +282,7 @@ def alterar_reserva():
                     hospede["tipoQuarto"] = dados["tipoQuarto"]
                     hospede["numDias"] = dados["numDias"]
                     hospede["valor"] = dados["valor"]
+                    print("Alteração realizada com sucesso")
 
             json.dump(
                 hospedes_data, open("./hospedes.data.json", "w", encoding="utf-8")
@@ -307,7 +313,7 @@ def relatorio_por_status(status):
     hospedes_json = open("./hospedes.data.json")
     hospedes_data = json.load(hospedes_json)
     reservas = functions.listar_reservas_por_status(hospedes_data, status)
-
+    # Filtra pelo status passado
     value = 1
     while value == 1:
         functions.cls()
@@ -323,7 +329,10 @@ def relatorio_por_status(status):
 def relatorio_total_recebido():
     hospedes_json = open("./hospedes.data.json")
     hospedes_data = json.load(hospedes_json)
-    total = float(reduce(lambda acc, x: acc + x["valor"], hospedes_data, 0))
+    # passa o iteravel pelo reducer
+
+    reservas = functions.listar_reservas_por_status(hospedes_data, "F")
+    total = float(reduce(lambda acc, x: acc + x["valor"], reservas, 0))
 
     functions.cls()
     print("Relatório")
